@@ -17,7 +17,8 @@ trait RhoDslQueryParamExtractors[F[_]] extends FailureResponseOps[F] {
       name: String,
       description: Option[String],
       default: Option[T],
-      validate: T => Option[F[BaseResult[F]]])(implicit
+      validate: T => Option[F[BaseResult[F]]],
+      format: Option[String] = None)(implicit
       F: Functor[F],
       parser: QueryParser[F, T],
       m: TypeTag[T]): TypedQuery[F, T :: HNil] =
@@ -29,7 +30,7 @@ trait RhoDslQueryParamExtractors[F[_]] extends FailureResponseOps[F] {
           case Some(resp) => FailureResponse.pure(F.map(resp)(_.resp))
         }
       }
-    }.withMetadata(QueryMetaData(name, description, parser, default = default, m))
+    }.withMetadata(QueryMetaData(name, description, format, parser, default = default, m))
 
   /** Defines a parameter in query string that should be bound to a route definition.
     *
@@ -40,6 +41,17 @@ trait RhoDslQueryParamExtractors[F[_]] extends FailureResponseOps[F] {
       parser: QueryParser[F, T],
       m: TypeTag[T]): TypedQuery[F, T :: HNil] =
     _paramR(name, None, None, _ => None)
+
+  /** Defines a parameter in query string that should be bound to a route definition.
+   *
+   * @param name name of the parameter in query
+   * @param format format of the parameter to be shown on swagger ui
+   */
+  def paramF[T](name: String, format: Option[String] = None)(implicit
+                             F: FlatMap[F],
+                             parser: QueryParser[F, T],
+                             m: TypeTag[T]): TypedQuery[F, T :: HNil] =
+    _paramR(name, None, None, _ => None, format)
 
   /** Defines a parameter in query string that should be bound to a route definition.
     *

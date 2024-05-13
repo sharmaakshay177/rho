@@ -122,6 +122,10 @@ class MyRoutes[F[+_]: Async](swaggerSyntax: SwaggerSyntax[F])
       Ok(p)
     }
 
+  "formats" @@ POST / "auth" +? param[String]("url") & paramF[String]("password", "password".some) |>> {
+    (_: String, _: String) => Ok("Checking credentials")
+  }
+
   "Get a file" **
     GET / "file" |>> Ok(SwaggerFileResponse("HELLO"))
 

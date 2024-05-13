@@ -26,6 +26,7 @@ trait SecurityScopesMetaData extends Metadata {
 case class QueryMetaData[F[_], T](
     name: String,
     description: Option[String],
+    format: Option[String],
     p: QueryParser[F, T],
     default: Option[T],
     m: TypeTag[T])

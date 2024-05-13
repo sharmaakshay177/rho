@@ -104,6 +104,17 @@ class SwaggerModelsBuilderSuite extends FunSuite {
   }
 
   test(
+    "SwaggerModelsBuilder.collectQueryParams should handle param with format"
+  ) {
+    val ra = fooPath +? paramF[String]("password", "password".some) |>> { (_: String) => "" }
+
+    assertEquals(
+      sb.collectQueryParams(singleLinearRoute(ra)),
+      List(QueryParameter(`type` = "string".some, name = "password".some, required = true, format = "password".some))
+    )
+  }
+
+  test(
     "SwaggerModelsBuilder.collectQueryParams should handle an action with one optional seq query parameter"
   ) {
     val ra = fooPath +? param[Option[Seq[String]]]("name") |>> { (_: Option[Seq[String]]) => "" }
